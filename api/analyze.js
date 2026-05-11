@@ -64,6 +64,7 @@ CRITICAL: Return valid JSON only. No markdown. No apostrophes in contractions. N
 {"personalityId":"...","quote":"...","body":"...","stats":{"energy":0,"valence":0,"danceability":0,"acousticness":0,"chaosLevel":0,"avgTempo":0,"avgPopularity":0}}`
 
   try {
+    if (!process.env.ANTHROPIC_API_KEY) return res.status(500).json({ error: 'Missing ANTHROPIC_API_KEY' })
     const message = await anthropic.messages.create({
       model: 'claude-opus-4-7',
       max_tokens: 600,
@@ -89,6 +90,6 @@ CRITICAL: Return valid JSON only. No markdown. No apostrophes in contractions. N
     res.json({ tracks, ...parsed })
   } catch (e) {
     console.error('Claude error:', e)
-    res.status(500).json({ error: 'Analysis failed' })
+    res.status(500).json({ error: 'Analysis failed', detail: e.message, type: e.constructor.name })
   }
 }

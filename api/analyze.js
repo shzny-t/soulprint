@@ -55,7 +55,11 @@ Pick ONE personality type from this exact list (use the exact id):
 
 QUOTE — one punchy line (12-18 words). Like a lyric you would screenshot. Reference the actual emotional territory of these songs. No quotation marks inside the value.
 
-BODY — 3 sentences, under 80 words total. This is a direct personality read, not music analysis. Write like you know this person. Use "you" constantly. Make specific claims about who they ARE — their personality, how they act in relationships, what they do on weekends, what kind of friend they are, maybe a vivid image of their life ("in another life you were...") — all grounded in what these specific songs reveal. Name 2-3 actual songs as proof. Be a little presumptuous and fun. No poetry, no describing the music — just bold personality statements.
+BODY — 3 short paragraphs, around 150 words total. This is a direct personality read, not music analysis. Write like you know this person. Use "you" constantly. Each paragraph covers a different angle:
+Paragraph 1: Who they are as a person — their energy, their social vibe, how they move through the world. Name 1-2 actual songs as proof.
+Paragraph 2: How they are in relationships and with people close to them — are they loyal, chaotic, soft, intense, the one who fixes things or the one who needs fixing. Name 1-2 songs as proof.
+Paragraph 3: A vivid life image or two — what they do on weekends, a "in another life you were..." moment, or a specific scene that fits them perfectly. Name 1 song as proof.
+Be presumptuous, direct, fun. No poetry. No describing what the music sounds like — only what it says about THIS person.
 
 STATS — estimate 0-100 based on your knowledge of these songs: energy, valence, danceability, acousticness, chaosLevel, avgTempo (BPM number), avgPopularity.
 

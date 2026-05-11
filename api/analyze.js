@@ -59,7 +59,7 @@ BODY — 3 sentences. Mention 2-3 actual songs by name and what they reveal abou
 
 STATS — estimate 0-100 based on your knowledge of these songs: energy, valence, danceability, acousticness, chaosLevel, avgTempo (BPM number), avgPopularity.
 
-CRITICAL: Return valid JSON only. No markdown. No apostrophes in contractions. No double quotes inside string values. No special characters.
+CRITICAL: Return valid JSON only. No markdown fences. Escape any apostrophes inside strings as \\u0027. Use only ASCII double quotes for JSON structure. No special characters.
 
 {"personalityId":"...","quote":"...","body":"...","stats":{"energy":0,"valence":0,"danceability":0,"acousticness":0,"chaosLevel":0,"avgTempo":0,"avgPopularity":0}}`
 
@@ -73,10 +73,11 @@ CRITICAL: Return valid JSON only. No markdown. No apostrophes in contractions. N
 
     const raw = message.content[0].text.trim()
     const cleaned = raw
-      .replace(/['']/g, '')
-      .replace(/[""]/g, '')
+      .replace(/['']/g, "'")
+      .replace(/[""]/g, '"')
       .replace(/\r/g, '').replace(/\n/g, ' ').replace(/\t/g, ' ')
       .replace(/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/g, '')
+      .replace(/```json\s*/gi, '').replace(/```\s*/g, '')
 
     let parsed
     try {
@@ -90,6 +91,6 @@ CRITICAL: Return valid JSON only. No markdown. No apostrophes in contractions. N
     res.json({ tracks, ...parsed })
   } catch (e) {
     console.error('Claude error:', e)
-    res.status(500).json({ error: 'Analysis failed', detail: e.message, type: e.constructor.name })
+    res.status(500).json({ error: 'Analysis failed' })
   }
 }

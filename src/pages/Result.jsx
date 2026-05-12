@@ -193,26 +193,13 @@ export default function Result() {
           )}
 
           {description?.body && (
-            <p className={styles.bodyText}>{description.body}</p>
+            <div className={styles.bodyText}>
+              {description.body.split('\n\n').filter(Boolean).map((para, i) => (
+                <p key={i}>{para}</p>
+              ))}
+            </div>
           )}
 
-          <div className={styles.traits}>
-            {personality.traits.map(t => (
-              <span key={t} className={styles.trait}>{t}</span>
-            ))}
-          </div>
-
-          <div className={styles.compat}>
-            <div className={styles.compatRow}>
-              <span className={styles.compatKey}>Compatible with</span>
-              <span className={styles.compatVal}>{personality.compatibleWith}</span>
-            </div>
-            <div className={styles.compatDivider} />
-            <div className={styles.compatRow}>
-              <span className={styles.compatKey}>Clashes with</span>
-              <span className={styles.compatVal}>{personality.notCompatibleWith}</span>
-            </div>
-          </div>
         </div>
 
         {/* Right: stats + ticket + tracks */}

@@ -39,19 +39,15 @@ export default async function handler(req, res) {
 This person's top songs from the last 6 months:
 ${trackList}
 
-Pick ONE personality type from this exact list (use the exact id):
-- delulu-romantic: The Romantic Idealist — lives inside music, deeply empathic, emotional, narrative thinker
-- villain-era: The Sovereign Shadow — psychologically complex, high autonomy, intensity as baseline, principled
-- main-pop-girl: The Synchronist — socially attuned, emotionally generous, present-focused, instinctive taste-maker
-- 2am-spiral: The Liminal Mind — introspective, comfort in ambiguity, late-night philosopher, emotional archaeologist
-- unhinged-academia: The Aesthetic Absolutist — analytical listener, pattern recognition, principled taste, refuses the obvious
-- that-girl-delusional: The Aspirational Self — future-oriented, high self-concept, motion as identity, optimism as discipline
-- cottagecore-burnout: The Pastoral Escapist — sensory sensitive, world-weary idealist, seeks the quiet, deeply imaginative
-- hyperpop-menace: The Sensory Anarchist — intensity-seeking, refuses moderation, texture over melody, finds calm in chaos
-- sad-indie-kid: The Melancholic Archivist — high sensitivity, memory-driven, finds beauty in grief, the observer type
-- goblin-mode: The Eclectic Contrarian — cognitively restless, anti-genre, curiosity-driven, immune to trend
-- industry-plant: The Cultural Mirror — culturally attuned, trend-sensitive, social listener, comfort in consensus
-- midnight-romantic: The Nocturnalist — private emotional life, slow to open, deeply loyal to sound, plays the long game
+Pick ONE personality type from this exact list (use the exact id). Read the songs carefully — the type should feel like a genuine fit, not a guess:
+- midnight-architect: Arctic Monkeys, The 1975, Tame Impala, Radiohead, Lorde energy. Thinks in long stretches. Processes life at night. Introspective, cinematic, builds entire worlds in their head.
+- tender-one: HONNE, Olivia Dean, Rex Orange County, Clairo, Gracie Abrams, Novo Amor energy. Loves carefully and completely. Soft but not fragile. The one who remembers everything.
+- beautiful-wreck: Olivia Rodrigo, Phoebe Bridgers, Mitski, Lana Del Rey, boygenius energy. Lives at full emotional volume. Feels everything as if it is the first time. Dramatically self-aware about it.
+- devoted: Frank Ocean, SZA, Daniel Caesar, Sade, Steve Lacy, d4vd energy. Sensory, intentional, deeply loyal. Values intimacy over everything. Has a specific corner of the world that is entirely theirs.
+- old-soul: The Smiths, Kate Bush, Fleetwood Mac, Joy Division, David Bowie, Joni Mitchell energy. Belongs to a different era. Romantic about the past. Has very specific and uncompromising taste.
+- quiet-storm: Hozier, Sleep Token, Bon Iver, Nick Cave, Fiona Apple, Sigur Ros energy. Looks calm, is not calm. Has the most intense inner life of anyone in the room. Goes all the way in when they love something.
+- seeker: Kendrick Lamar, Bjork, James Blake, FKA Twigs, Radiohead, eclectic genre-defying mixes. Follows curiosity wherever it leads. Listens to understand not just to feel. Hard to fully figure out.
+- live-wire: Muse, Metallica, The Strokes, Queens of the Stone Age, Rage Against the Machine, Placebo, heavy rock energy. Runs on adrenaline. Does not do things halfway. Has been loyal to the same bands since they were 15.
 
 QUOTE — one punchy line (12-18 words). The kind of line someone screenshots and posts with no caption. Should feel like a gut-punch observation about who this person is, not a description of their music. No quotation marks inside the value.
 

@@ -34,7 +34,7 @@ export default async function handler(req, res) {
 
   const trackList = tracks.map((t, i) => `${i + 1}. "${t.name}" by ${t.artist?.name || t.artist}`).join('\n')
 
-  const prompt = `You are writing a brutally accurate music personality reading. You know songs deeply — their lyrics, genre context, what kind of person gravitates toward them, what emotional state they signal.
+  const prompt = `You are doing a music personality reading in the style of hyper-specific, voyeuristic TikTok vibe checks — the kind that makes people screenshot and send it to their friends saying "this is literally you." You know these songs deeply: their lyrics, the emotional context, the type of person who listens to them at 2am vs. the gym vs. a long drive.
 
 This person's top songs from the last 6 months:
 ${trackList}
@@ -53,13 +53,16 @@ Pick ONE personality type from this exact list (use the exact id):
 - industry-plant: The Cultural Mirror — culturally attuned, trend-sensitive, social listener, comfort in consensus
 - midnight-romantic: The Nocturnalist — private emotional life, slow to open, deeply loyal to sound, plays the long game
 
-QUOTE — one punchy line (12-18 words). Like a lyric you would screenshot. Reference the actual emotional territory of these songs. No quotation marks inside the value.
+QUOTE — one punchy line (12-18 words). The kind of line someone screenshots and posts with no caption. Should feel like a gut-punch observation about who this person is, not a description of their music. No quotation marks inside the value.
 
-BODY — 3 short paragraphs, around 150 words total. This is a direct personality read, not music analysis. Write like you know this person. Use "you" constantly. Each paragraph covers a different angle:
-Paragraph 1: Who they are as a person — their energy, their social vibe, how they move through the world. Name 1-2 actual songs as proof.
-Paragraph 2: How they are in relationships and with people close to them — are they loyal, chaotic, soft, intense, the one who fixes things or the one who needs fixing. Name 1-2 songs as proof.
-Paragraph 3: A vivid life image or two — what they do on weekends, a "in another life you were..." moment, or a specific scene that fits them perfectly. Name 1 song as proof.
-Be presumptuous, direct, fun. No poetry. No describing what the music sounds like — only what it says about THIS person.
+BODY — 3 short paragraphs, ~160 words total. This is the meshtimes-style hyper-specific vibe check. The goal is to make them feel seen in a way that's almost uncomfortable. Rules:
+- Write in second person ("you"), direct and confident, like you already know them
+- Be HYPER-SPECIFIC. Not "you feel things deeply" — instead: "you have a playlist you made at 1am three years ago that you still cannot listen to sober"
+- Name actual songs from their list and say exactly what that song reveals — not what it sounds like, but what it means about their personality, their habits, their emotional patterns
+- Paint specific scenes from their real life: what they do on a Sunday morning, how they text, what they order at a cafe, what their notes app looks like, how they act when they like someone
+- Each paragraph is a different lens: (1) their everyday personality and energy, (2) how they are with people they love — friends, relationships, who they are when they care about someone, (3) a vivid life scene or "in another life you were..." image that captures their whole soul
+- Do NOT use generic personality adjectives like "empathetic," "chaotic," "complex." Show, don't tell. Specific behaviors only.
+- The vibe should be: warm, a little spiky, like your most perceptive friend is reading you at a sleepover
 
 STATS — estimate 0-100 based on your knowledge of these songs: energy, valence, danceability, acousticness, chaosLevel, avgTempo (BPM number), avgPopularity.
 

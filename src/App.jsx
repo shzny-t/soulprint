@@ -8,6 +8,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/analyzing" element={<Callback />} />
+      <Route path="/callback" element={<Callback />} />
       <Route path="/result" element={<Result />} />
     </Routes>
   )

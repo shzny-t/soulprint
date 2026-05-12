@@ -4,7 +4,7 @@ import { PERSONALITY_TYPES } from '../services/personality'
 import styles from './Callback.module.css'
 
 const STEPS = [
-  'Connecting to Last.fm...',
+  'Connecting to Spotify...',
   'Pulling top 30 tracks...',
   'Reading the room...',
   'Writing your verdict...',
@@ -20,16 +20,38 @@ export default function Callback() {
     if (ran.current) return
     ran.current = true
 
-    const username = sessionStorage.getItem('lastfm_username')
-    if (!username) { navigate('/'); return }
+    const params = new URLSearchParams(window.location.search)
+    const code = params.get('code')
+    const error = params.get('error')
+
+    if (error || !code) {
+      navigate('/?error=' + encodeURIComponent(error || 'Authorization failed'))
+      return
+    }
 
     async function run() {
       try {
         setStep(1)
+
+        // Exchange code for access token
+        const tokenRes = await fetch('/api/spotify-token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code }),
+        })
+        const tokenData = await tokenRes.json()
+        if (!tokenRes.ok) {
+          navigate('/?error=' + encodeURIComponent(tokenData.error || 'Auth failed'))
+          return
+        }
+
+        setStep(2)
+
+        // Analyze with Claude
         const res = await fetch('/api/analyze', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username }),
+          body: JSON.stringify({ access_token: tokenData.access_token }),
         })
 
         setStep(3)
@@ -41,39 +63,30 @@ export default function Callback() {
         }
 
         const data = await res.json()
-        const { personalityId, quote, body, stats, tracks } = data
+        const { personalityId, quote, body, stats, tracks, profile } = data
 
         setStep(4)
 
-        const personality = PERSONALITY_TYPES.find((p) => p.id === personalityId) || PERSONALITY_TYPES[0]
+        const personality = PERSONALITY_TYPES.find(p => p.id === personalityId) || PERSONALITY_TYPES[0]
 
-        sessionStorage.setItem(
-          'soultrack_result',
-          JSON.stringify({
-            personality,
-            stats,
-            description: { quote, body },
-            tracks: tracks.slice(0, 8).map((t) => {
-              const imgUrl = [3, 2, 1, 0]
-                .map(i => t.image?.[i]?.['#text'])
-                .find(u => u && !u.includes('2a96cbd8b46e442fc41c2b86b82156ab'))
-                || ''
-              return {
-                id: t.url,
-                name: t.name,
-                artists: [{ name: t.artist?.name || t.artist }],
-                external_urls: { spotify: t.url },
-                album: { images: [null, null, { url: imgUrl }], name: '' },
-              }
-            }),
-            profile: { display_name: username },
-          })
-        )
+        sessionStorage.setItem('soultrack_result', JSON.stringify({
+          personality,
+          stats,
+          description: { quote, body },
+          tracks: (tracks || []).slice(0, 8).map(t => ({
+            id: t.id,
+            name: t.name,
+            artists: t.artists,
+            external_urls: t.external_urls,
+            album: t.album,
+          })),
+          profile: profile || {},
+        }))
 
         setTimeout(() => navigate('/result'), 400)
       } catch (err) {
         console.error(err)
-        navigate('/')
+        navigate('/?error=Something went wrong')
       }
     }
 

@@ -2,7 +2,6 @@ import Anthropic from '@anthropic-ai/sdk'
 import { readFileSync } from 'fs'
 import { resolve } from 'path'
 
-// Load .env for local dev
 try {
   const env = readFileSync(resolve(process.cwd(), '.env'), 'utf8')
   for (const line of env.split('\n')) {
@@ -14,25 +13,36 @@ try {
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
 
-  const { username } = req.body
-  if (!username) return res.status(400).json({ error: 'Missing username' })
+  const { access_token } = req.body
+  if (!access_token) return res.status(400).json({ error: 'Missing access_token' })
 
-  const LASTFM_KEY = process.env.LASTFM_API_KEY
   const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
-  let tracks
+  let tracks, profile
   try {
-    const url = `https://ws.audioscrobbler.com/2.0/?method=user.gettoptracks&user=${encodeURIComponent(username)}&period=6month&limit=30&api_key=${LASTFM_KEY}&format=json`
-    const lfRes = await fetch(url)
-    const lfData = await lfRes.json()
-    if (lfData.error) return res.status(404).json({ error: lfData.message || 'User not found' })
-    tracks = (lfData.toptracks?.track || []).slice(0, 30)
-    if (!tracks.length) return res.status(404).json({ error: 'No listening history found' })
+    const [tracksRes, profileRes] = await Promise.all([
+      fetch('https://api.spotify.com/v1/me/top/tracks?limit=30&time_range=medium_term', {
+        headers: { Authorization: `Bearer ${access_token}` },
+      }),
+      fetch('https://api.spotify.com/v1/me', {
+        headers: { Authorization: `Bearer ${access_token}` },
+      }),
+    ])
+
+    const tracksData = await tracksRes.json()
+    const profileData = await profileRes.json()
+
+    if (tracksData.error) return res.status(401).json({ error: tracksData.error.message })
+    tracks = tracksData.items || []
+    profile = profileData
+    if (!tracks.length) return res.status(404).json({ error: 'No listening history found. Listen to more music on Spotify first.' })
   } catch {
-    return res.status(500).json({ error: 'Failed to fetch Last.fm data' })
+    return res.status(500).json({ error: 'Failed to fetch Spotify data' })
   }
 
-  const trackList = tracks.map((t, i) => `${i + 1}. "${t.name}" by ${t.artist?.name || t.artist}`).join('\n')
+  const trackList = tracks.map((t, i) =>
+    `${i + 1}. "${t.name}" by ${t.artists.map(a => a.name).join(', ')}`
+  ).join('\n')
 
   const prompt = `You are doing a music personality reading in the style of hyper-specific, voyeuristic TikTok vibe checks — the kind that makes people screenshot and send it to their friends saying "this is literally you." You know these songs deeply: their lyrics, the emotional context, the type of person who listens to them at 2am vs. the gym vs. a long drive.
 
@@ -51,7 +61,7 @@ Pick ONE personality type from this exact list (use the exact id). Read the song
 
 QUOTE — one punchy line (12-18 words). The kind of line someone screenshots and posts with no caption. Should feel like a gut-punch observation about who this person is, not a description of their music. No quotation marks inside the value.
 
-BODY — 3 short paragraphs, ~160 words total. This is the meshtimes-style hyper-specific vibe check. The goal is to make them feel seen in a way that's almost uncomfortable. Rules:
+BODY — 3 short paragraphs, ~160 words total. This is the meshtimes-style hyper-specific vibe check. The goal is to make them feel seen in a way that is almost uncomfortable. Rules:
 - Write in second person ("you"), direct and confident, like you already know them
 - Be HYPER-SPECIFIC. Not "you feel things deeply" — instead: "you have a playlist you made at 1am three years ago that you still cannot listen to sober"
 - Name actual songs from their list and say exactly what that song reveals — not what it sounds like, but what it means about their personality, their habits, their emotional patterns
@@ -91,7 +101,7 @@ CRITICAL: Return valid JSON only. No markdown fences. Escape any apostrophes ins
       parsed = JSON.parse(match[0])
     }
 
-    res.json({ tracks, ...parsed })
+    res.json({ tracks, profile, ...parsed })
   } catch (e) {
     console.error('Claude error:', e)
     res.status(500).json({ error: 'Analysis failed' })

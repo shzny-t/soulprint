@@ -25,35 +25,76 @@ function StatBar({ label, value, color }) {
 function VinylWheel({ tracks }) {
   const covers = tracks.slice(0, 8).map(t => t.album?.images?.[2]?.url).filter(Boolean)
   const count = covers.length || 8
+  const wrapRef = useRef(null)
+  const innerRef = useRef(null)
+  const rotationRef = useRef(0)
+  const lastAngleRef = useRef(null)
+  const rafRef = useRef(null)
+  const targetRotRef = useRef(0)
+
+  function getAngleFromCenter(e) {
+    const rect = wrapRef.current.getBoundingClientRect()
+    const cx = rect.left + rect.width / 2
+    const cy = rect.top + rect.height / 2
+    return Math.atan2(e.clientY - cy, e.clientX - cx) * (180 / Math.PI)
+  }
+
+  function handleMouseMove(e) {
+    const angle = getAngleFromCenter(e)
+    if (lastAngleRef.current !== null) {
+      let delta = angle - lastAngleRef.current
+      if (delta > 180) delta -= 360
+      if (delta < -180) delta += 360
+      targetRotRef.current += delta * 1.4
+    }
+    lastAngleRef.current = angle
+  }
+
+  function handleMouseLeave() {
+    lastAngleRef.current = null
+  }
+
+  useEffect(() => {
+    function animate() {
+      rotationRef.current += (targetRotRef.current - rotationRef.current) * 0.12
+      if (innerRef.current) {
+        innerRef.current.style.transform = `rotate(${rotationRef.current}deg)`
+      }
+      rafRef.current = requestAnimationFrame(animate)
+    }
+    rafRef.current = requestAnimationFrame(animate)
+    return () => cancelAnimationFrame(rafRef.current)
+  }, [])
 
   return (
-    <div className={styles.vinylWrap}>
-      <div className={styles.vinylOuter} />
-      <div className={styles.vinylGrooves} />
-      <div className={styles.vinylLabel}>
-        <span className={styles.vinylLabelText}>Soul<br />print</span>
-      </div>
-      <div className={styles.albumRing}>
-        {Array.from({ length: count }).map((_, i) => {
-          const angle = (i / count) * 360
-          const rad = (angle * Math.PI) / 180
-          const r = 162
-          const cx = 184
-          const cy = 184
-          const x = cx + r * Math.sin(rad) - 26
-          const y = cy - r * Math.cos(rad) - 26
-          return covers[i] ? (
-            <img
-              key={i}
-              src={covers[i]}
-              className={styles.albumCover}
-              style={{ left: x, top: y }}
-              alt=""
-            />
-          ) : (
-            <div key={i} className={styles.albumPlaceholder} style={{ left: x, top: y }} />
-          )
-        })}
+    <div
+      ref={wrapRef}
+      className={styles.vinylWrap}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
+      <div ref={innerRef} className={styles.vinylInner}>
+        <div className={styles.vinylOuter} />
+        <div className={styles.vinylGrooves} />
+        <div className={styles.vinylLabel}>
+          <span className={styles.vinylLabelText}>Soul<br />print</span>
+        </div>
+        <div className={styles.albumRing}>
+          {Array.from({ length: count }).map((_, i) => {
+            const angle = (i / count) * 360
+            const rad = (angle * Math.PI) / 180
+            const r = 162
+            const cx = 184
+            const cy = 184
+            const x = cx + r * Math.sin(rad) - 26
+            const y = cy - r * Math.cos(rad) - 26
+            return covers[i] ? (
+              <img key={i} src={covers[i]} className={styles.albumCover} style={{ left: x, top: y }} alt="" />
+            ) : (
+              <div key={i} className={styles.albumPlaceholder} style={{ left: x, top: y }} />
+            )
+          })}
+        </div>
       </div>
     </div>
   )
